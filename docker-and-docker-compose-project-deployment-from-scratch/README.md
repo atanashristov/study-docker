@@ -183,7 +183,7 @@ services:
 ```
 
 We make Docker container to restart every time it exited regardless the exit code.
-See [restart documentation](https://docs.docker.com/compose/compose-file/05-services/#restart).
+See [Docker Compose restart documentation](https://docs.docker.com/compose/compose-file/05-services/#restart).
 
 The port on the `left` is the `host port`.
 The port on the `right` is the `container port`.
@@ -231,6 +231,11 @@ REPOSITORY                                          TAG                    IMAGE
 realworld-docker-api                                latest                 82f908f20289   10 minutes ago   158MB
 ```
 
+References:
+
+- [node images on DockerHub](https://hub.docker.com/_/node)
+- [Docker Compose restart documentation](https://docs.docker.com/compose/compose-file/05-services/#restart)
+
 ### Section 2, Lesson 11: Environment Variables
 
 Why we need variables?
@@ -255,12 +260,6 @@ services:
       - PORT=300
 ```
 
-We can now build and run docker compose with this shortcut:
-
-```sh
- docker-compose up --build
-```
-
 Then in the `src/index.js` we can read from the environment. Note: preferably we read from different configuration file.
 
 ```js
@@ -270,3 +269,47 @@ app.listen(port, () => {
   console.log(`Started api service, listen at port ${port}`)
 })
 ```
+
+We can now build and run docker compose with this shortcut:
+
+```sh
+ docker-compose up --build
+```
+
+### Section 2, Lesson 12: Adding database
+
+We are adding MongoDB and using `mongoose` to connect to it from Node.
+
+Under `api` run `npm install mongoose`.
+
+We adding `configuration/index.js` and moving in reading the environment variables.
+
+We are adding `helpers/db.js` to deal with DB connection.
+
+And we are adding `mongo` image from docker hub as `api_db` service.
+
+We directly write the image configuration inside the `docker-compose.yaml` and there is no `build` section.
+
+Instead we do have `image` section, since we have no project folder. We just use it directly.
+
+We also specify to start `api_db` first and then the `api` services.
+
+We also specify the `MONGO_URL`
+
+```yaml
+services:
+  api:
+    build: ./api
+    environment:
+      - MONGO_URL=mongodb://api_db:27017/api
+    depends_on:
+      - api_db
+...
+  api_db:
+    image: mongo:latest
+```
+
+References:
+
+- [mongoose site](https://mongoosejs.com/docs/)
+- [Docker image mongo](https://hub.docker.com/_/mongo)
