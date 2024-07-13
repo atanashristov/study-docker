@@ -4,7 +4,7 @@ Notes and code from [Project in Docker | Docker Basics - Microservices](https://
 
 ## Section 2: Configuration
 
-### Section 2, Lesson 7: Creating Docker file
+### Section 2, Lesson 6: Creating Docker file
 
 Work in directory `./realworld-docker`.
 
@@ -49,10 +49,65 @@ References:
 - [Dockerfile Reference](https://docs.docker.com/reference/dockerfile/)
 - [DockerHub Node images](https://hub.docker.com/_/node)
 
-### Section 2, Lesson 8: Creating API application
+### Section 2, Lesson 7: Creating API application
 
 Within `api` run `npm init`. Then add few packages:
 
 ```sh
 npm install express
 ```
+
+Next we add `.gitignore` file to ignore `node_modules`:
+
+```sh
+node_modules
+```
+
+We add `src` folder to write our code. And we add `index.js` into it with basic express web server:
+
+```js
+const express = require("express")
+
+const app = express()
+
+app.get("/test", (req, res) => {
+  res.send("Our API server is working correctly")
+})
+
+app.listen(3000, () => {
+  console.log("Started api service, listen at port 3000")
+})
+```
+
+Then we add to package.json a script to start the app. Note **start** script is **standard name for production** ("dev" would be for development):
+
+```json
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  ...
+```
+
+And then from `api` folder we can test if it is working by starting the app:
+
+```sh
+npm run start
+
+> api@1.0.0 start
+> node src/index.js
+
+Started api service, listen at port 3000
+```
+
+We can test the app with:
+
+```sh
+curl http://localhost:3000/test
+API server is working correctly
+```
+
+### Section 2, Lesson 8: Creating API application
