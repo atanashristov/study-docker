@@ -157,3 +157,44 @@ docker-compose build
 => => writing image sha256:e5b14..
  => => naming to docker.io/library/realworld-docker-api
 ```
+
+### Section 2, Lesson 9: Starting API server
+
+If we were to run docker only, we had to add to the `Dockerfile`:
+
+```sh
+EXPOSE 3000
+
+CMD ["npm", "run start"]
+```
+
+But since we are using Docker Compose, we set this is `docker-compose.yaml` and that is our only source of truth:
+
+```yaml
+version: '3'
+
+services:
+  api:
+    build: ./api
+    command: npm run start
+    ports:
+      - '3000:3000'
+```
+
+The port on the `left` is the `host port`.
+The port on the `right` is the `container port`.
+
+We run again `docker-compose build`.
+
+Then we start Docker Compose with `docker-compose up`:
+
+```sh
+docker-compose up
+[+] Running 2/0
+ ✔ Network realworld-docker_default
+ ✔ Container realworld-docker-api-1
+Attaching to realworld-docker-api-1
+realworld-docker-api-1  | > api@1.0.0 start
+realworld-docker-api-1  | > node src/index.js
+realworld-docker-api-1  | Started api service, listen at port 3000
+```
