@@ -110,4 +110,50 @@ curl http://localhost:3000/test
 API server is working correctly
 ```
 
-### Section 2, Lesson 8: Creating API application
+### Section 2, Lesson 8: Preparing API Docker image
+
+Edit the Dockerfile `api/Dockerfile`.
+
+We add `WORKDIR`. Can be any directory, as in our image we only have one application, so there is no naming conflicts:
+
+```sh
+WORKDIR /usr/src/app
+```
+
+Next we specify, _when we build the image_, we want to copy inside `package.json` and `package-lock.json` files. With these 2 we will install the node modules:
+
+```sh
+COPY package.* ./
+```
+
+We install the packages. The command `RUN` runs shell commands:
+
+```sh
+RUN npm install
+```
+
+The only thing we have to do now is to copy the rest of the code:
+
+```sh
+COPY . .
+```
+
+We also have to add `.dockerignore` file, so we skip `node_modules`. It works _the same way as_ `.gitignore`.
+
+If we run `docker-compose build` we get:
+
+```sh
+docker-compose build
+[+] Building 2.4s (10/10) FINISHED
+=> [api internal] load build definition from Dockerfile
+=> [api internal] load .dockerignore
+=> [api internal] load metadata for docker.io/library/node:22
+=> => transferring context: 27.88kB
+=> [api 2/5] WORKDIR /usr/src/app
+=> [api 3/5] COPY package.* ./
+=> [api 4/5] RUN npm install
+=> [api 5/5] COPY . .
+=> [api] exporting to image
+=> => writing image sha256:e5b14..
+ => => naming to docker.io/library/realworld-docker-api
+```
