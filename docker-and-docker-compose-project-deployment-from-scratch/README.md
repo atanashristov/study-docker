@@ -230,3 +230,43 @@ docker images
 REPOSITORY                                          TAG                    IMAGE ID       CREATED          SIZE
 realworld-docker-api                                latest                 82f908f20289   10 minutes ago   158MB
 ```
+
+### Section 2, Lesson 11: Environment Variables
+
+Why we need variables?
+
+For example we can have different ports for production vs development environments.
+
+We may have sandbox and production token for 3rd party application.
+
+Let's add `PORT` environment variable to the `docker-compose.yaml` file:
+
+```yaml
+version: '3'
+
+services:
+  api:
+    build: ./api
+    command: npm run start
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=300
+```
+
+We can now build and run docker compose with this shortcut:
+
+```sh
+ docker-compose up --build
+```
+
+Then in the `src/index.js` we can read from the environment. Note: preferably we read from different configuration file.
+
+```js
+const port = process.env.PORT ?? 8080;
+...
+app.listen(port, () => {
+  console.log(`Started api service, listen at port ${port}`)
+})
+```
