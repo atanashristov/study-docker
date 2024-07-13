@@ -177,9 +177,13 @@ services:
   api:
     build: ./api
     command: npm run start
+    restart: unless-stopped
     ports:
       - '3000:3000'
 ```
+
+We make Docker container to restart every time it exited regardless the exit code.
+See [restart documentation](https://docs.docker.com/compose/compose-file/05-services/#restart).
 
 The port on the `left` is the `host port`.
 The port on the `right` is the `container port`.
@@ -197,4 +201,32 @@ Attaching to realworld-docker-api-1
 realworld-docker-api-1  | > api@1.0.0 start
 realworld-docker-api-1  | > node src/index.js
 realworld-docker-api-1  | Started api service, listen at port 3000
+```
+
+### Section 2, Lesson 10: Docker Hub
+
+If we run `docker images` we can see how big is the node image that we pull:
+
+```sh
+REPOSITORY                                          TAG                    IMAGE ID       CREATED          SIZE
+realworld-docker-api                                latest                 1e77deee7d70   12 minutes ago   1.12GB
+```
+
+If we look at the [node images on DockerHub](https://hub.docker.com/_/node), we can pick up `alpine`.
+
+Change the `Dockerfile` like this:
+
+```sh
+FROM node:22.4.1-alpine
+
+```
+
+Then run `docker-compose build` again.
+
+Looks at the images, we have much smaller image now:
+
+```sh
+docker images
+REPOSITORY                                          TAG                    IMAGE ID       CREATED          SIZE
+realworld-docker-api                                latest                 82f908f20289   10 minutes ago   158MB
 ```
